@@ -19,27 +19,38 @@ for i in range(len(x)):
             Z[j][i] = Z[j][i] + (y_data[n] - b - w*x_data[n])**2
         Z[j][i] = Z[j][i]/len(x_data)
 
+#隨便找起始點
 b = -120 # initial b
 w = -4 # inital w
-lr = 0.000001 #learning rate
+lr = 1 #learning rate 學習率
 iteration = 100000
 
 # Store initial values for plotting
-b_history = [b]
-w_history = [w]
+b_history = [b] #所有b參數
+w_history = [w] #所有w參數
+
+lr_b = 0
+lr_w = 0
 
 # Iterations
 for i in range(iteration):
-    
+    #我要找y=wx+b的解，y為預測值，y'為實際值
+    #定義公式(實際值-預測值)**2就是(y'-(wx+b))**2
+    #10個點就是L(w,b)=sig(10)[(y-(wx+b))**2]
     b_grad = 0.0
     w_grad = 0.0
     for n in range(len(x_data)):
+        #L(w,b)對b偏微分
         b_grad = b_grad -2.0*(y_data[n] - b - w*x_data[n])*1.0
+        #L(w,b)對w偏微分
         w_grad = w_grad - 2.0*(y_data[n] - b - w*x_data[n])*x_data[n]
-        
+    #Adagrad修改learning rate
+    lr_b = lr_b + b_grad ** 2
+    lr_w = lr_w + w_grad ** 2
+    
     # Update parameters.
-    b = b - lr * b_grad
-    w = w - lr * w_grad
+    b = b - lr/np.sqrt(lr_b) * b_grad
+    w = w - lr/np.sqrt(lr_w) * w_grad
     
     # Store parameters or plotting
     b_history.append(b)
